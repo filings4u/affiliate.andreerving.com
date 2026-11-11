@@ -16,6 +16,10 @@ function render(){
  const pending=summary(conversions,'pending'),approved=summary(conversions,'approved'),paid=summary(conversions,'paid');
  let content='';
  if(!p){
+ const regionCodes='AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS YE YT ZA ZM ZW'.split(' ');
+ const countryNames=new Intl.DisplayNames(['en'],{type:'region'});
+ const markets=[...new Set(regionCodes.map(code=>countryNames.of(code)))].sort((a,b)=>a.localeCompare(b));
+ markets.unshift('Global / International');
  const typeOptions=['Content creator','Educator or trainer','Business or organization','Consultant or coach','Blogger or publisher','Community owner','Other'];
  const channelOptions=['Social media','Email newsletter','Website or blog','YouTube or video','Podcast','Online community','Direct referrals','Other'];
  const audienceOptions=['Under 1,000','1,000–5,000','5,001–25,000','25,001–100,000','Over 100,000'];
@@ -23,21 +27,21 @@ function render(){
  content=heading('Affiliate Partner Application','Tell us about your business, promotional channels, and the audience you serve.')+
  '<section class="panel"><form id="affiliate-application" class="affiliate-form">'+
  '<div class="apply-grid">'+
- '<label class="form-control">Full name <span aria-hidden="true">*</span><input class="input" name="fullName" required minlength="2" maxlength="150" value="'+esc(current?.user_metadata?.full_name||'')+'"></label>'+
- '<label class="form-control">Email address <span aria-hidden="true">*</span><input class="input" name="email" type="email" readonly required value="'+esc(current?.email||'')+'"></label>'+
+ '<label class="form-control"><span class="apply-label">Full name <span class="apply-required" aria-hidden="true">*</span></span><input class="input" name="fullName" required minlength="2" maxlength="150" value="'+esc(current?.user_metadata?.full_name||'')+'"></label>'+
+ '<label class="form-control"><span class="apply-label">Email address <span class="apply-required" aria-hidden="true">*</span></span><input class="input" name="email" type="email" readonly required value="'+esc(current?.email||'')+'"></label>'+
  '<label class="form-control">Business or brand name<input class="input" name="businessName" maxlength="180"><small>Enter your name if applying individually.</small></label>'+
- '<label class="form-control">Country or primary market <span aria-hidden="true">*</span><input class="input" name="countryMarket" required maxlength="120"></label>'+
+ '<label class="form-control"><span class="apply-label">Country or primary market <span class="apply-required" aria-hidden="true">*</span></span><select class="input" name="countryMarket" required>'+selectOptions(markets)+'</select></label>'+
  '</div><h2>Your Promotion Channels</h2>'+
- '<label class="form-control">Website or primary promotional channel <span aria-hidden="true">*</span><input class="input" name="primaryChannel" required maxlength="300" placeholder="Website URL, social profile, or channel name"></label>'+
- '<label class="form-control">Partner type <span aria-hidden="true">*</span><select class="input" name="partnerType" required>'+selectOptions(typeOptions)+'</select></label>'+
- '<fieldset class="apply-fieldset"><legend>How will you promote Andre Erving resources? <span aria-hidden="true">*</span></legend><div class="apply-checks">'+
+ '<label class="form-control"><span class="apply-label">Website or primary promotional channel <span class="apply-required" aria-hidden="true">*</span></span><input class="input" name="primaryChannel" required maxlength="300" placeholder="Website URL, social profile, or channel name"></label>'+
+ '<label class="form-control"><span class="apply-label">Partner type <span class="apply-required" aria-hidden="true">*</span></span><select class="input" name="partnerType" required>'+selectOptions(typeOptions)+'</select></label>'+
+ '<fieldset class="apply-fieldset"><legend>How will you promote Andre Erving resources? <span class="apply-required" aria-hidden="true">*</span></legend><div class="apply-checks">'+
  channelOptions.map(x=>'<label><input type="checkbox" name="promotionChannels" value="'+esc(x)+'"> '+esc(x)+'</label>').join('')+
  '</div></fieldset>'+
  '<label class="form-control">Additional social media or profile links<textarea class="input" name="additionalProfiles" maxlength="2500" rows="4"></textarea></label>'+
  '<h2>Your Audience</h2>'+
- '<label class="form-control">Briefly describe your audience <span aria-hidden="true">*</span><small>Who do you serve, and what topics or resources are they interested in?</small><textarea class="input" name="audienceDescription" required minlength="10" maxlength="1800" rows="5"></textarea></label>'+
- '<label class="form-control">Audience size or monthly traffic <span aria-hidden="true">*</span><select class="input" name="audienceSize" required>'+selectOptions(audienceOptions)+'</select></label>'+
- '<h2>Agreement</h2><label class="apply-agreement"><input type="checkbox" name="agreedToTerms" required> I agree to the <a href="/affiliate-terms.html" target="_blank" rel="noopener">Affiliate Program Terms</a> and will clearly disclose my affiliate relationship when promoting eligible products or resources. <span aria-hidden="true">*</span></label>'+
+ '<label class="form-control"><span class="apply-label">Briefly describe your audience <span class="apply-required" aria-hidden="true">*</span></span><small>Who do you serve, and what topics or resources are they interested in?</small><textarea class="input" name="audienceDescription" required minlength="10" maxlength="1800" rows="5"></textarea></label>'+
+ '<label class="form-control"><span class="apply-label">Audience size or monthly traffic <span class="apply-required" aria-hidden="true">*</span></span><select class="input" name="audienceSize" required>'+selectOptions(audienceOptions)+'</select></label>'+
+ '<h2>Agreement</h2><label class="apply-agreement"><input type="checkbox" name="agreedToTerms" required> I agree to the <a href="/affiliate-terms.html" target="_blank" rel="noopener">Affiliate Program Terms</a> and will clearly disclose my affiliate relationship when promoting eligible products or resources. <span class="apply-required" aria-hidden="true">*</span></label>'+
  '<button class="primary" type="submit">Submit application</button><p id="affiliate-apply-message" role="status" aria-live="polite"></p></form></section>';
 }
  else if(p.status!=='active'){content=heading('Application under review','Your affiliate account is verified. Access is subject to management approval.')+'<section class="panel"><h2>Application status: <span class="chip">'+esc(p.status)+'</span></h2><p>'+ (p.status==='pending'?'Thank you for applying to the Andre Erving Affiliate Partner Program. Applications are manually reviewed based on audience fit, promotional methods, and compliance with program requirements. Submitting an application does not guarantee approval. If approved, you will receive additional instructions for accessing your affiliate links and tracking referrals.':'Your affiliate application requires management review. Contact support@andreerving.com for assistance.')+'</p><p class="muted">Referral links, sales, commissions and payout tools are not available until approval.</p><button type="button" id="affiliate-check-status" class="primary">Check approval status</button></section>'}
