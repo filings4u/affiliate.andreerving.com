@@ -9,7 +9,7 @@ async function api(action,data={}){const {data:{session}}=await db.auth.getSessi
 function shell(page){const allowed=['dashboard','apply','links','sales','payouts','payment-setup','account'];const verified=account?.profile?.status==='active';const key=allowed.includes(page)&&(verified||!['links','sales','payouts','payment-setup'].includes(page))?page:'dashboard';document.querySelectorAll('[data-page]').forEach(a=>{a.classList.toggle('active',a.dataset.page===key);a.setAttribute('aria-current',a.dataset.page===key?'page':'false')});return key}
 function summary(rows,status){return rows.filter(x=>x.status===status).reduce((sum,x)=>sum+Number(x.commission_amount||0),0)}
 function heading(title,description){return '<div class="heading"><span class="eyebrow">ANDRE ERVING / AFFILIATE PARTNERS</span><h1>'+esc(title)+'</h1><p>'+esc(description)+'</p></div>'}
-function linkBox(url,label){return '<section class="panel"><h2>'+esc(label)+'</h2><div class="ref-link"><input type="text" readonly value="'+esc(url)+'" aria-label="'+esc(label)+'"><button type="button" data-copy="'+esc(url)+'">Copy link</button></div></section>'}
+function linkBox(url,label){return '<section class="panel"><h2>'+esc(label)+'</h2><div class="ref-link"><input type="text" readonly value="'+esc(url)+'" aria-label="'+esc(label)+'"><button type="button" data-copy="'+esc(url)+'">Copy link</button></div><p class="ref-open"><a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Open referral link ↗</a></p></section>'}
 function render(){
  if(!account)return;
  const p=account.profile;const conversions=account.conversions||[],payouts=account.payouts||[],key=shell(location.hash.replace(/^#\/?/,''));
