@@ -48,8 +48,14 @@ function render(){
  else if(key==='dashboard'){content=heading('Affiliate overview','Your personalized referral and earnings dashboard')+'<div class="stats">'+[['Tracked visits',Number(account.clicks||0).toLocaleString()],['Pending',money(pending)],['Approved',money(approved)],['Paid',money(paid)]].map(([k,v])=>'<section class="stat"><span>'+esc(k)+'</span><strong>'+esc(v)+'</strong></section>').join('')+'</div>'+linkBox('https://andreerving.com/?ref='+p.code,'Your main referral link')+'<section class="panel"><h2>Partner overview</h2><p>Commission rate: <strong>'+esc(p.commissionRate)+'%</strong> · Tracking window: '+esc(account.settings?.attributionDays)+' days · Minimum payout: '+money(account.settings?.minPayout)+'</p><p class="muted">Paid sales are subject to commission approval, refunds and program terms. Always disclose affiliate relationships when promoting.</p></section>'}
  else if(key==='links'){
  const rows=[['Website','https://andreerving.com/'],['All courses','https://andreerving.com/courses.html'],...courseCatalog.map(c=>[c.title,c.url])];
+ const clicks=account.clickReport||[];
+ const pathName=url=>{try{return new URL(url).pathname}catch{return '/'}};
+ const totalFor=url=>clicks.filter(c=>c.path===pathName(url)).reduce((n,c)=>n+Number(c.total||0),0);
  content=heading('Referral links','Share your personalized tracking links to the website and every published course.')+
- '<div class="link-grid">'+rows.map(([label,url])=>linkBox(url+(url.includes('?')?'&':'?')+'ref='+encodeURIComponent(p.code),label)).join('')+'</div>'+
+ '<div class="stats">'+[['Total tracked clicks',Number(account.clicks||0).toLocaleString()],['Last 30 days',Number(account.clicks30d||0).toLocaleString()],['Attributed sales',conversions.length.toLocaleString()],['Commission rate',p.commissionRate+'%']].map(([l,v])=>'<section class="stat"><span>'+esc(l)+'</span><strong>'+esc(v)+'</strong></section>').join('')+'</div>'+
+ '<div class="link-grid">'+rows.map(([label,url])=>'<div>'+linkBox(url+(url.includes('?')?'&':'?')+'ref='+encodeURIComponent(p.code),label)+'<p class="ref-clicks">'+totalFor(url).toLocaleString()+' tracked click(s) to this destination</p></div>').join('')+'</div>'+
+ '<section class="panel"><h2>Clicks by landing page</h2><div class="tablewrap"><table><thead><tr><th>Destination</th><th>Lifetime clicks</th><th>Last 30 days</th><th>Last clicked</th></tr></thead><tbody>'+
+ (clicks.map(c=>'<tr><td>'+esc(c.path)+'</td><td>'+Number(c.total).toLocaleString()+'</td><td>'+Number(c.recent).toLocaleString()+'</td><td>'+date(c.last)+'</td></tr>').join('')||'<tr><td colspan="4">No referral clicks yet.</td></tr>')+'</tbody></table></div></section>'+
  '<section class="panel"><h2>Promotion guidelines</h2><p>Clearly disclose your affiliate relationship. Do not spam or make misleading earnings claims.</p><a href="/affiliate-terms.html">Read affiliate terms</a></section>';
 }
  else if(key==='sales'){content=heading('Referral sales','Verified purchases attributed to your referral links')+'<section class="panel"><h2>Sales history</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Sale amount</th><th>Commission</th><th>Status</th></tr></thead><tbody>'+(conversions.map(x=>'<tr><td>'+date(x.created_at)+'</td><td>'+money(x.gross_amount)+'</td><td>'+money(x.commission_amount)+'</td><td><span class="chip">'+esc(x.status)+'</span></td></tr>').join('')||'<tr><td colspan="4">No referral sales have been recorded yet.</td></tr>')+'</tbody></table></div></section>'}
@@ -59,11 +65,11 @@ function render(){
  content=heading('Payment Setup','Configure how approved affiliate commissions may be paid.')+
  '<section class="panel"><h2>Choose your payout method</h2><p>Payment preferences do not initiate payouts. All commissions remain subject to approval, holding periods, eligibility, and verification.</p>'+
  '<div class="payout-methods"><section class="payout-method"><h3>Bank account · Stripe Connect</h3><p>For eligible U.S. partners. Enter banking information on Stripe’s secure hosted onboarding page, never into this website.</p>'+
- '<p><strong>Status:</strong> '+(pay.stripeConnected?'Stripe account created — finish or review onboarding':'Not connected')+'</p>'+
+ '<p><strong>Status:</strong> '+(pay.stripeConnected?'Stripe account created — finish or review onboarding':'Not connected')+'</p><div class="payout-reveal-row"><span id="bank-details" aria-live="polite">Bank information is securely held by Stripe. Full account and routing numbers are never available here.</span><button type="button" class="reveal-btn" id="bank-status">View masked bank</button></div>'+
  '<button type="button" class="primary" id="connect-bank" '+(pay.bankOnboardingAvailable?'':'disabled')+'>'+(pay.bankOnboardingAvailable?(pay.stripeConnected?'Continue bank setup':'Set up bank payouts'):'Bank setup not yet enabled')+'</button><p id="bank-message" role="status" class="muted">'+(pay.bankOnboardingAvailable?'':'Stripe Connect must be configured by Andre Erving before bank onboarding is available. Please do not send bank details to support.')+'</p></section>'+
  '<section class="payout-method"><h3>Zelle® payout preference</h3><p>Zelle transfers are manual, subject to availability and management review. Set the email or U.S. mobile number already enrolled with Zelle.</p>'+
  '<form id="zelle-setup" class="profile-form"><label>Enrolled contact type<select name="contactType" required><option value="">Choose one</option><option value="email" '+(pay.zelleContactType==='email'?'selected':'')+'>Zelle email</option><option value="phone" '+(pay.zelleContactType==='phone'?'selected':'')+'>U.S. mobile number</option></select></label>'+
- '<label>Zelle registered email or U.S. mobile<input name="contact" type="text" required maxlength="254" value="'+esc(pay.zelleContact||'')+'" autocomplete="off"></label>'+
+ '<label>Zelle registered email or U.S. mobile<div class="payout-reveal-row"><input name="contact" type="text" maxlength="254" placeholder="Enter a new destination to update it" autocomplete="off"><button type="button" class="reveal-btn" id="reveal-zelle" aria-label="Show saved Zelle destination" aria-pressed="false">Show <span aria-hidden="true">◉</span></button></div></label><p id="zelle-masked" class="muted">Saved: '+esc(pay.zelleContactMasked||'Not configured')+'</p>'+
  '<div class="zelle-terms"><h4>Zelle payout agreement</h4><ol><li>Zelle availability, business use, and transfer limits depend on the participating bank or credit union. Selecting Zelle does not guarantee an available payout method.</li><li>You confirm that the contact belongs to you and is enrolled in an eligible account authorized to receive these payments. You must notify support before changing your destination.</li><li>Transfers to enrolled recipients generally cannot be reversed or cancelled. Verify your details carefully before requesting payout.</li><li>Only reviewed, eligible and approved commissions may be paid. Minimum thresholds, holds, refunds, taxes, and compliance checks still apply; no payout is guaranteed by setup.</li><li>Zelle payments are manually initiated after management approval. We do not request your bank passwords, routing or account numbers for Zelle.</li></ol></div>'+
  '<label class="consent-label"><input type="checkbox" name="accepted" required> I have read and agree to the Zelle payout terms above.</label>'+
  '<button class="primary" type="submit">Save Zelle payout preference</button><p id="zelle-message" role="status" class="muted"></p></form></section></div>'+
@@ -116,6 +122,17 @@ function render(){
    const x=await api('affiliate_payment_setup',{method:'zelle',contact:zelle.elements.contact.value,contactType:zelle.elements.contactType.value,accepted:zelle.elements.accepted.checked});
    $('zelle-message').textContent=x.message||'Preference saved';await load();toast('Payout preference saved');
   }catch(err){$('zelle-message').textContent=err.message||'Unable to save payout preference'}finally{btn.disabled=false}};
+ $('reveal-zelle')?.addEventListener('click',async()=>{const btn=$('reveal-zelle');btn.disabled=true;try{
+ const reveal=btn.getAttribute('aria-pressed')!=='true';
+ if(reveal){const info=await api('affiliate_payout_details',{scope:'partner',reveal:true});
+   $('zelle-masked').textContent='Saved destination: '+(info.zelleContact||'Not configured');
+   btn.textContent='Hide ◉';btn.setAttribute('aria-pressed','true');
+ }else{$('zelle-masked').textContent='Saved: '+(account.payoutSetup?.zelleContactMasked||'Not configured');btn.textContent='Show ◉';btn.setAttribute('aria-pressed','false')}
+ }catch(err){$('zelle-message').textContent=err.message||'Cannot display saved destination'}finally{btn.disabled=false}});
+ $('bank-status')?.addEventListener('click',async()=>{const btn=$('bank-status');btn.disabled=true;try{
+ const info=await api('affiliate_payout_details',{scope:'partner',reveal:false});
+ $('bank-details').textContent=info.bank?.display||'No bank details available';
+ }catch(err){$('bank-details').textContent=err.message||'Unable to retrieve bank status'}finally{btn.disabled=false}});
  $('connect-bank')?.addEventListener('click',async()=>{const btn=$('connect-bank');btn.disabled=true;try{
    const x=await api('affiliate_payment_setup',{method:'bank'});
    if(x.url){window.location.assign(x.url);return}
