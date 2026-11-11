@@ -45,7 +45,41 @@ function render(){
  '<button class="primary" type="submit">Submit application</button><p id="affiliate-apply-message" role="status" aria-live="polite"></p></form></section>';
 }
  else if(p.status!=='active'){content=heading('Application under review','Your affiliate account is verified. Access is subject to management approval.')+'<section class="panel"><h2>Application status: <span class="chip">'+esc(p.status)+'</span></h2><p>'+ (p.status==='pending'?'Thank you for applying to the Andre Erving Affiliate Partner Program. Applications are manually reviewed based on audience fit, promotional methods, and compliance with program requirements. Submitting an application does not guarantee approval. If approved, you will receive additional instructions for accessing your affiliate links and tracking referrals.':'Your affiliate application requires management review. Contact support@andreerving.com for assistance.')+'</p><p class="muted">Referral links, sales, commissions and payout tools are not available until approval.</p><button type="button" id="affiliate-check-status" class="primary">Check approval status</button></section>'}
- else if(key==='dashboard'){content=heading('Affiliate overview','Your personalized referral and earnings dashboard')+'<div class="stats">'+[['Tracked visits',Number(account.clicks||0).toLocaleString()],['Pending',money(pending)],['Approved',money(approved)],['Paid',money(paid)]].map(([k,v])=>'<section class="stat"><span>'+esc(k)+'</span><strong>'+esc(v)+'</strong></section>').join('')+'</div>'+linkBox('https://andreerving.com/?ref='+p.code,'Your main referral link')+'<section class="panel"><h2>Partner overview</h2><p>Commission rate: <strong>'+esc(p.commissionRate)+'%</strong> · Tracking window: '+esc(account.settings?.attributionDays)+' days · Minimum payout: '+money(account.settings?.minPayout)+'</p><p class="muted">Paid sales are subject to commission approval, refunds and program terms. Always disclose affiliate relationships when promoting.</p></section>'}
+ else if(key==='dashboard'){
+ const referralUrl='https://andreerving.com/?ref='+encodeURIComponent(p.code);
+ const totalClicks=Number(account.clicks||0),recentClicks=Number(account.clicks30d||0);
+ const rates=Number(p.commissionRate||0),minPayout=Number(account.settings?.minPayout||0);
+ const payout=account.payoutSetup||{},payoutLabel=payout.method==='zelle'?'Zelle preference saved':payout.method==='bank'?'Bank onboarding started':'Action needed';
+ const activity=[
+ ...conversions.map(x=>({type:'sale',date:x.created_at,title:'Referral purchase',meta:esc(x.status||'pending'),amount:money(x.commission_amount||0)})),
+ ...payouts.map(x=>({type:'payout',date:x.paid_at||x.created_at,title:'Payout '+(x.status||'recorded'),meta:date(x.created_at),amount:money(x.amount||0)}))
+ ].filter(x=>x.date).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,4);
+ const clicksByPage=(account.clickReport||[]).slice().sort((a,b)=>Number(b.total||0)-Number(a.total||0)).slice(0,3);
+ const period=Number(account.settings?.attributionDays||0);
+ content='<div class="aff-dashboard">'+
+ '<section class="aff-welcome"><div class="aff-welcome-copy"><span class="aff-welcome-kicker">ANDRE ERVING / AFFILIATE WORKSPACE</span><span class="aff-status-pill"><span class="aff-status-dot"></span> ACTIVE PARTNER</span>'+
+ '<h1>Welcome back, '+esc((p.displayName||p.name||'Partner').split(' ')[0])+'.</h1><p>Here’s how your referrals are performing. Share your links, monitor activity, and keep your earnings moving forward.</p>'+
+ '<div class="aff-welcome-actions"><a class="aff-cta-primary" href="#/links">Explore referral links <span aria-hidden="true">↗</span></a><a class="aff-cta-secondary" href="#/sales">View sales activity</a></div></div>'+
+ '<div class="aff-welcome-rate"><span>YOUR COMMISSION RATE</span><strong>'+esc(rates.toLocaleString('en-US',{maximumFractionDigits:1}))+'<small>%</small></strong><p>On eligible attributed purchases</p></div></section>'+
+ '<div class="aff-section-head"><div><h2>Performance at a glance</h2><p>Your partner activity and earnings</p></div><span class="aff-period">All time · click comparison: 30 days</span></div>'+
+ '<div class="aff-metrics">'+[
+ ['Tracked clicks',totalClicks.toLocaleString(),'Last 30 days: '+recentClicks.toLocaleString(),'clicks'],
+ ['Referral sales',conversions.length.toLocaleString(),'Attributed purchases','sales'],
+ ['Pending commissions',money(pending),'Awaiting review','pending'],
+ ['Approved commissions',money(approved),'Eligible after review','approved']
+ ].map(([label,value,meta,kind])=>'<section class="aff-metric aff-metric-'+kind+'"><div class="aff-metric-top"><span>'+esc(label)+'</span><span class="aff-metric-icon" aria-hidden="true">'+({clicks:'↗',sales:'▣',pending:'◷',approved:'✓'}[kind])+'</span></div><strong>'+esc(value)+'</strong><p>'+esc(meta)+'</p></section>').join('')+'</div>'+
+ '<div class="aff-dashboard-columns"><section class="aff-dashboard-panel aff-referral-panel"><div class="aff-panel-title"><div><span class="aff-panel-kicker">SHARE & EARN</span><h2>Your personal referral link</h2><p>Send people directly to Andre Erving and earn on qualifying sales.</p></div><span class="aff-mini-icon" aria-hidden="true">↗</span></div>'+
+ '<div class="aff-referral-input"><input type="text" id="dashboard-referral-link" value="'+esc(referralUrl)+'" readonly aria-label="Your main referral link"><button type="button" data-copy="'+esc(referralUrl)+'">Copy link</button></div>'+
+ '<div class="aff-panel-bottom"><a href="'+esc(referralUrl)+'" target="_blank" rel="noopener noreferrer">Open referral link ↗</a><a href="#/links">See all course links →</a></div></section>'+
+ '<section class="aff-dashboard-panel aff-payout-panel"><div class="aff-panel-title"><div><span class="aff-panel-kicker">YOUR PAYOUTS</span><h2>Payment readiness</h2><p>Set up your preferred payment method.</p></div><span class="aff-mini-icon" aria-hidden="true">▣</span></div>'+
+ '<div class="aff-payout-state"><span class="'+(payout.method==='unconfigured'||!payout.method?'aff-payout-warning':'aff-payout-ready')+'">'+esc(payoutLabel)+'</span><strong>'+money(paid)+' <small>paid to date</small></strong></div>'+
+ '<div class="aff-panel-bottom"><span>Minimum payout: '+money(minPayout)+'</span><a href="#/payment-setup">Manage payment setup →</a></div></section></div>'+
+ '<div class="aff-dashboard-columns aff-dashboard-lower"><section class="aff-dashboard-panel"><div class="aff-panel-title"><div><span class="aff-panel-kicker">LATEST UPDATES</span><h2>Recent activity</h2></div><a href="#/sales" class="aff-compact-link">See sales →</a></div>'+
+ (activity.length?'<div class="aff-activity-list">'+activity.map(x=>'<div class="aff-activity-item"><span class="aff-activity-dot" aria-hidden="true"></span><div><strong>'+esc(x.title)+'</strong><small>'+date(x.date)+' · '+esc(x.meta)+'</small></div><b>'+esc(x.amount)+'</b></div>').join('')+'</div>':'<div class="aff-empty"><span aria-hidden="true">◎</span><strong>Your referral journey starts here.</strong><p>As purchases and payouts are recorded, your latest activity will appear here.</p><a href="#/links">Find a link to share →</a></div>')+'</section>'+
+ '<section class="aff-dashboard-panel"><div class="aff-panel-title"><div><span class="aff-panel-kicker">AUDIENCE TRAFFIC</span><h2>Your top destinations</h2></div><a href="#/links" class="aff-compact-link">View clicks →</a></div>'+
+ (clicksByPage.length?'<div class="aff-destination-list">'+clicksByPage.map(x=>{const name=x.path==='/'?'Main website · Homepage':String(x.path).split('/').pop().replace(/\.html?$/,'').replace(/[-_]/g,' ');return '<div class="aff-destination-item"><div><strong>'+esc(name)+'</strong><small>'+esc(x.path)+'</small></div><b>'+Number(x.total||0).toLocaleString()+' <small>clicks</small></b></div>'}).join('')+'</div>':'<div class="aff-empty"><span aria-hidden="true">↗</span><strong>No destination data yet</strong><p>Tracked visitors will appear here after they use your referral links.</p></div>')+'</section></div>'+
+ '<footer class="aff-dashboard-footnote"><span>Tracking window: '+esc(period)+' days</span><span>Commission payments are subject to program terms, approval and refund reviews.</span><a href="/affiliate-terms.html">Affiliate terms ↗</a></footer></div>';
+}
  else if(key==='links'){
  const rows=[['Website','https://andreerving.com/'],['All courses','https://andreerving.com/courses.html'],...courseCatalog.map(c=>[c.title,c.url])];
  const clicks=account.clickReport||[];
