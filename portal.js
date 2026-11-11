@@ -93,7 +93,40 @@ function render(){
  '<section class="panel"><h2>Promotion guidelines</h2><p>Clearly disclose your affiliate relationship. Do not spam or make misleading earnings claims.</p><a href="/affiliate-terms.html">Read affiliate terms</a></section>';
 }
  else if(key==='sales'){content=heading('Referral sales','Verified purchases attributed to your referral links')+'<section class="panel"><h2>Sales history</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Sale amount</th><th>Commission</th><th>Status</th></tr></thead><tbody>'+(conversions.map(x=>'<tr><td>'+date(x.created_at)+'</td><td>'+money(x.gross_amount)+'</td><td>'+money(x.commission_amount)+'</td><td><span class="chip">'+esc(x.status)+'</span></td></tr>').join('')||'<tr><td colspan="4">No referral sales have been recorded yet.</td></tr>')+'</tbody></table></div></section>'}
- else if(key==='payouts'){content=heading('Commissions & payouts','Your earning balance and payout history')+'<div class="stats">'+[['Pending review',money(pending)],['Approved',money(approved)],['Paid',money(paid)],['Minimum payout',money(account.settings?.minPayout)]].map(([k,v])=>'<section class="stat"><span>'+esc(k)+'</span><strong>'+esc(v)+'</strong></section>').join('')+'</div><section class="panel"><h2>Payout history</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Amount</th><th>Status</th></tr></thead><tbody>'+(payouts.map(x=>'<tr><td>'+date(x.created_at)+'</td><td>'+money(x.amount)+'</td><td>'+esc(x.status)+'</td></tr>').join('')||'<tr><td colspan="3">No payouts have been issued.</td></tr>')+'</tbody></table></div><div class="alert">Stripe Connect payouts are not yet activated. Approved balances are not automatically transferred.</div></section>'}
+ else if(key==='payouts'){
+ const minimum=Math.max(0,Number(account.settings?.minPayout||0));
+ const payoutSetup=account.payoutSetup||{};
+ const method=payoutSetup.method||'unconfigured';
+ const methodLabel=method==='zelle'?'Zelle':method==='bank'?'Bank via Stripe Connect':'Not configured';
+ const setupMessage=method==='zelle'
+ ?(payoutSetup.zelleAccepted?'Zelle preference saved · manual payouts require review.':'Zelle terms require acceptance before payout.')
+ :method==='bank'
+  ?(payoutSetup.stripeConnected?'Stripe account created · onboarding and eligibility must be verified.':'Bank onboarding is not complete.')
+  :'Choose a payment method before receiving payouts.';
+ const progress=minimum>0?Math.min(100,Math.max(0,approved/minimum*100)):100;
+ const payoutList=payouts.slice().sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+ content='<div class="aff-payout-page">'+
+ '<div class="heading"><span class="eyebrow">ANDRE ERVING / AFFILIATE PARTNERS</span><h1>Commissions & payouts</h1><p>Monitor earnings, review payout history, and manage your payment preferences.</p></div>'+
+ '<section class="aff-payout-hero"><div><span class="aff-payout-overline">YOUR AFFILIATE EARNINGS</span><h2>Keep track of every commission.</h2><p>Commission balances are reviewed before payout. You can follow your progress and payment status in one place.</p><a href="#/sales" class="aff-payout-hero-link">Review referral sales ↗</a></div><div class="aff-payout-hero-total"><span>TOTAL PAID</span><strong>'+money(paid)+'</strong><small>Recorded commission payments</small></div></section>'+
+ '<div class="aff-section-head"><div><h2>Earnings overview</h2><p>Amounts reflect your current commission records</p></div><span class="aff-period">Updated with your account data</span></div>'+
+ '<div class="aff-metrics aff-payout-metrics">'+[
+  ['Pending review',money(pending),'Awaiting approval','pending'],
+  ['Approved',money(approved),'Subject to payout eligibility','approved'],
+  ['Paid commissions',money(paid),'Recorded as paid','paid'],
+  ['Minimum payout',money(minimum),'Program payout threshold','threshold']
+ ].map(([label,value,meta,kind])=>'<section class="aff-metric aff-metric-'+kind+'"><div class="aff-metric-top"><span>'+esc(label)+'</span><span class="aff-metric-icon" aria-hidden="true">'+({pending:'◷',approved:'✓',paid:'↗',threshold:'▣'}[kind])+'</span></div><strong>'+esc(value)+'</strong><p>'+esc(meta)+'</p></section>').join('')+'</div>'+
+ '<div class="aff-payout-columns"><section class="aff-dashboard-panel aff-payout-progress"><div class="aff-panel-title"><div><span class="aff-panel-kicker">PAYOUT ELIGIBILITY</span><h2>Minimum payout progress</h2><p>Approved commission balance compared with your payout threshold.</p></div><span class="aff-mini-icon" aria-hidden="true">◎</span></div>'+
+ '<div class="aff-progress-label"><strong>'+money(approved)+'</strong><span>of '+money(minimum)+'</span></div>'+
+ '<div class="aff-progress-track" role="progressbar" aria-label="Approved commission payout progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.round(progress)+'"><span style="width:'+progress.toFixed(1)+'%"></span></div>'+
+ '<p class="aff-progress-help">'+(approved>=minimum&&minimum>0?'Threshold reached. Payment still requires eligibility checks and management approval.':minimum>0?money(Math.max(0,minimum-approved))+' in additional approved commissions to reach the threshold.':'No minimum payout threshold is configured.')+'</p>'+
+ '</section><section class="aff-dashboard-panel aff-payout-setup"><div class="aff-panel-title"><div><span class="aff-panel-kicker">PAYMENT PREFERENCES</span><h2>Your payout method</h2><p>Bank or Zelle payment setup</p></div><span class="aff-mini-icon" aria-hidden="true">▣</span></div>'+
+ '<div class="aff-payout-method-details"><strong>'+esc(methodLabel)+'</strong><span class="'+(method==='unconfigured'?'aff-payout-warning':'aff-payout-ready')+'">'+esc(method==='unconfigured'?'Setup required':'Preference recorded')+'</span></div>'+
+ '<p class="aff-payout-description">'+esc(setupMessage)+'</p><a class="aff-payment-action" href="#/payment-setup">Manage payment setup →</a></section></div>'+
+ '<section class="aff-dashboard-panel aff-payout-history"><div class="aff-panel-title"><div><span class="aff-panel-kicker">PAYMENT ACTIVITY</span><h2>Payout history</h2><p>Review payouts recorded for your affiliate account.</p></div><span class="aff-mini-icon" aria-hidden="true">▤</span></div>'+
+ (payoutList.length?'<div class="tablewrap"><table><thead><tr><th>Date</th><th>Amount</th><th>Status</th></tr></thead><tbody>'+payoutList.map(x=>'<tr><td>'+date(x.created_at)+'</td><td><strong>'+money(x.amount)+'</strong></td><td><span class="aff-history-status">'+esc(x.status||'Recorded')+'</span></td></tr>').join('')+'</tbody></table></div>':
+ '<div class="aff-payout-empty"><span class="aff-empty-symbol" aria-hidden="true">▤</span><h3>No payouts recorded yet</h3><p>When a payment is processed, its amount, date and status will appear here. You can review commissions in the meantime.</p><a href="#/sales">View referral sales →</a></div>')+'</section>'+
+ '<div class="aff-payout-disclaimer"><span aria-hidden="true">ⓘ</span><p>Approved commissions are not guaranteed or automatically transferred. Payouts depend on eligibility, refund and holding periods, available payment methods and program terms.</p><a href="/affiliate-terms.html">View terms ↗</a></div></div>';
+}
  else if(key==='payment-setup'){
  const pay=account.payoutSetup||{};
  content=heading('Payment Setup','Configure how approved affiliate commissions may be paid.')+
