@@ -32,3 +32,28 @@
 .affiliate-form .form-control small{margin-top:0;font-weight:400;line-height:1.45}
 .affiliate-form .apply-agreement{align-items:flex-start}
 @media(max-width:650px){.affiliate-form .apply-grid{grid-template-columns:1fr}}
+
+/* Affiliate profile and payout setup */
+.profile-summary{display:flex;align-items:center;gap:16px;padding-bottom:20px;border-bottom:1px solid #e1e8f0;margin-bottom:20px}
+.profile-summary h2{margin:0 0 5px;font-size:23px}
+.profile-summary p{margin:0;color:#67809b;font-size:13px}
+.profile-avatar{display:grid;place-items:center;flex:none;width:60px;height:60px;border-radius:14px;background:#173b62;color:#fff;font-size:27px;font-weight:800}
+.profile-form{display:grid;gap:18px;margin-top:18px}
+.profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.profile-form label{display:grid;gap:8px;min-width:0;color:#183957;font-weight:700;font-size:13px}
+.profile-form input,.profile-form select,.profile-form textarea{box-sizing:border-box;width:100%;min-width:0;border:1px solid #cbd9ea;border-radius:9px;background:#fff;color:#122f4e;padding:12px 14px;font-size:14px;font-weight:500;line-height:1.5}
+.profile-form textarea{resize:vertical}
+.profile-form :is(input,select,textarea):focus-visible{outline:2px solid #c99422;outline-offset:2px}
+.profile-form .primary{justify-self:start}
+.payout-methods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:22px 0}
+.payout-method{border:1px solid #dde7f0;border-radius:12px;background:#f9fbfe;padding:21px;min-width:0}
+.payout-method h3{color:#123252;font-size:18px;margin:0 0 8px}
+.payout-method>p{color:#58728d;font-size:13px}
+.zelle-terms{background:#fff;border:1px solid #e0e8ef;border-radius:10px;padding:17px 18px;color:#3c5871}
+.zelle-terms h4{margin:0 0 10px;font-size:14px;color:#143453}
+.zelle-terms ol{margin:0;padding-left:22px;line-height:1.7;font-size:12px}
+.zelle-terms li+li{margin-top:6px}
+.consent-label{display:flex!important;flex-direction:row;align-items:flex-start;gap:9px!important;line-height:1.6}
+.consent-label input{width:18px;flex:none;margin-top:3px;accent-color:#bd8a24}
+@media(max-width:960px){.payout-methods{grid-template-columns:1fr}}
+@media(max-width:650px){.profile-grid{grid-template-columns:1fr}.profile-form .primary{width:100%}.payout-method{padding:16px}}
