@@ -57,3 +57,15 @@
 .consent-label input{width:18px;flex:none;margin-top:3px;accent-color:#bd8a24}
 @media(max-width:960px){.payout-methods{grid-template-columns:1fr}}
 @media(max-width:650px){.profile-grid{grid-template-columns:1fr}.profile-form .primary{width:100%}.payout-method{padding:16px}}
+
+/* Affiliate click and protected payout displays */
+.ref-clicks{padding:0 12px 8px;margin:-12px 0 12px;color:#5e748e;font-size:12px;font-weight:650}
+.ref-open{margin:12px 0 0;font-size:13px}
+.ref-open a{color:#18538d;font-weight:700}
+.payout-reveal-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;min-width:0}
+.payout-reveal-row input{flex:1;min-width:180px}
+.payout-reveal-row span{flex:1;min-width:160px;line-height:1.6;color:#425d77;font-size:13px}
+.reveal-btn{background:#fff;border:1px solid #bed0e1;color:#163957;border-radius:8px;padding:11px 14px;font-size:12px;font-weight:750;white-space:nowrap}
+.reveal-btn:hover{background:#f1f5fa}
+.reveal-btn:focus-visible{outline:3px solid #e1b851;outline-offset:2px}
+@media(max-width:650px){.payout-reveal-row{align-items:stretch}.payout-reveal-row input,.payout-reveal-row span{min-width:0;flex-basis:100%}}
