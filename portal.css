@@ -69,3 +69,79 @@
 .reveal-btn:hover{background:#f1f5fa}
 .reveal-btn:focus-visible{outline:3px solid #e1b851;outline-offset:2px}
 @media(max-width:650px){.payout-reveal-row{align-items:stretch}.payout-reveal-row input,.payout-reveal-row span{min-width:0;flex-basis:100%}}
+
+/* Affiliate overview redesign — all other portal pages retain existing layouts */
+.aff-dashboard{display:grid;gap:22px;color:#123153}
+.aff-welcome{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) 225px;align-items:center;gap:36px;background:linear-gradient(120deg,#0c233e 0%,#14375d 65%,#204c72 100%);border-radius:19px;padding:39px 43px;color:#fff;min-height:255px}
+.aff-welcome::before{content:"";position:absolute;z-index:-1;pointer-events:none;width:340px;height:340px;border-radius:50%;border:1px solid rgba(255,255,255,.12);right:-88px;top:-170px;box-shadow:0 0 0 55px rgba(255,255,255,.035),0 0 0 112px rgba(255,255,255,.022)}
+.aff-welcome-copy{min-width:0}
+.aff-welcome-kicker{display:inline-block;color:#e4b24d;font-size:10px;letter-spacing:.13em;font-weight:850;margin:0 14px 10px 0}
+.aff-status-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(147,215,171,.45);color:#c4f4d3;background:rgba(58,136,90,.18);padding:5px 9px;border-radius:100px;font-size:10px;font-weight:800;letter-spacing:.04em;vertical-align:middle}
+.aff-status-dot{width:7px;height:7px;border-radius:50%;background:#83e5a2;box-shadow:0 0 0 3px rgba(131,229,162,.12)}
+.aff-welcome h1{color:#fff;font-size:clamp(30px,3vw,43px);line-height:1.12;letter-spacing:-.045em;margin:8px 0 12px}
+.aff-welcome p{font-size:14px;line-height:1.75;color:#c8d8e8;margin:0;max-width:630px}
+.aff-welcome-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:24px}
+.aff-welcome-actions a{display:inline-flex;align-items:center;justify-content:center;gap:11px;text-decoration:none;font-size:12px;font-weight:800;border-radius:9px;padding:13px 17px;min-height:45px}
+.aff-cta-primary{background:#dda833;color:#132c48}
+.aff-cta-primary:hover{background:#f0bf58}
+.aff-cta-secondary{border:1px solid rgba(220,234,249,.35);color:#fff}
+.aff-cta-secondary:hover{background:rgba(255,255,255,.09)}
+.aff-welcome-rate{border:1px solid rgba(213,231,248,.24);background:rgba(255,255,255,.075);border-radius:15px;padding:27px 22px;text-align:center;backdrop-filter:blur(5px)}
+.aff-welcome-rate>span{font-size:10px;color:#bdd2e7;font-weight:800;letter-spacing:.08em}
+.aff-welcome-rate strong{display:block;color:#fff;font-size:57px;letter-spacing:-.06em;line-height:1.1;margin:11px 0 6px;font-weight:850;font-variant-numeric:tabular-nums}
+.aff-welcome-rate strong small{font-size:25px;color:#e8b348}
+.aff-welcome-rate p{font-size:11px;color:#c8d8e8;line-height:1.5}
+.aff-section-head{display:flex;align-items:end;justify-content:space-between;gap:15px;margin:8px 0 -4px}
+.aff-section-head h2{font-size:20px;color:#102c4e;letter-spacing:-.02em;margin:0 0 4px}
+.aff-section-head p{margin:0;color:#6b839c;font-size:12px}
+.aff-period{color:#71859a;font-size:11px;font-weight:600;text-align:right}
+.aff-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}
+.aff-metric{background:#fff;border:1px solid #dce6f0;border-radius:14px;padding:20px 21px 19px;min-width:0}
+.aff-metric-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.aff-metric-top>span{font-size:12px;font-weight:650;color:#58718e}
+.aff-metric-icon{display:grid;place-items:center;width:31px;height:31px;border-radius:9px;background:#eaf1fa;color:#24527f;font-size:18px}
+.aff-metric-pending .aff-metric-icon{background:#fff4df;color:#ab781c}
+.aff-metric-approved .aff-metric-icon{background:#e4f5eb;color:#238254}
+.aff-metric strong{display:block;font-size:clamp(22px,2.2vw,32px);line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;margin:16px 0 8px;color:#102c4e}
+.aff-metric p{font-size:11px;line-height:1.4;color:#8192a6;margin:0}
+.aff-dashboard-columns{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:17px;align-items:stretch}
+.aff-dashboard-panel{background:#fff;border:1px solid #dce6f0;border-radius:14px;padding:25px 26px;min-width:0;overflow:hidden}
+.aff-panel-title{display:flex;align-items:start;justify-content:space-between;gap:14px}
+.aff-panel-kicker{display:block;font-size:10px;letter-spacing:.115em;color:#b07d24;font-weight:850;margin-bottom:8px}
+.aff-panel-title h2{color:#123153;line-height:1.3;font-size:19px;letter-spacing:-.02em;margin:0 0 6px}
+.aff-panel-title p{font-size:12px;color:#6c8098;line-height:1.55;margin:0}
+.aff-mini-icon{display:grid;place-items:center;flex:none;background:#edf3fa;border-radius:11px;color:#2b5681;width:38px;height:38px;font-size:20px}
+.aff-referral-input{display:flex;gap:9px;margin:24px 0 18px;min-width:0}
+.aff-referral-input input{flex:1;min-width:0;background:#f5f8fc;border:1px solid #d4e0ec;border-radius:9px;padding:12px 14px;color:#183958;font-size:13px;text-overflow:ellipsis}
+.aff-referral-input button{border:0;border-radius:9px;padding:12px 17px;background:#153b63;color:#fff;font-size:12px;font-weight:800;white-space:nowrap}
+.aff-referral-input button:hover{background:#205782}
+.aff-panel-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-top:15px;border-top:1px solid #e9eef5;font-size:12px;color:#6b819a}
+.aff-panel-bottom a,.aff-compact-link{color:#1c548b;font-weight:750;text-decoration:none;font-size:12px}
+.aff-panel-bottom a:hover,.aff-compact-link:hover{text-decoration:underline}
+.aff-payout-state{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:25px 0 19px;flex-wrap:wrap}
+.aff-payout-state>span{display:inline-flex;align-items:center;gap:7px;border-radius:100px;padding:7px 11px;font-weight:750;font-size:11px}
+.aff-payout-warning{background:#fff3dc;color:#925f12}
+.aff-payout-ready{background:#e8f6ed;color:#27784a}
+.aff-payout-state strong{color:#133454;font-size:21px;font-variant-numeric:tabular-nums}
+.aff-payout-state strong small{font-size:11px;color:#738aa3;font-weight:600}
+.aff-dashboard-lower{grid-template-columns:repeat(2,minmax(0,1fr))}
+.aff-activity-list,.aff-destination-list{margin-top:17px}
+.aff-activity-item,.aff-destination-item{display:flex;align-items:center;gap:13px;padding:13px 0;border-top:1px solid #edf1f6;min-width:0}
+.aff-activity-dot{display:block;flex:none;width:29px;height:29px;border-radius:9px;background:#eaf2fc;position:relative}
+.aff-activity-dot::after{content:"";position:absolute;inset:10px;border-radius:50%;background:#2b6498}
+.aff-activity-item>div,.aff-destination-item>div{flex:1;min-width:0}
+.aff-activity-item strong,.aff-destination-item strong{display:block;font-size:12px;color:#173754;overflow-wrap:anywhere}
+.aff-activity-item small,.aff-destination-item small{display:block;font-size:11px;color:#71869e;margin-top:4px;overflow-wrap:anywhere}
+.aff-activity-item b,.aff-destination-item b{flex:none;font-size:12px;color:#173754;font-variant-numeric:tabular-nums}
+.aff-destination-item b small{display:inline;font-weight:500}
+.aff-empty{text-align:center;margin:24px 0 6px;padding:16px}
+.aff-empty>span{display:grid;place-items:center;background:#f2f6fb;color:#6e8baa;font-size:24px;border-radius:50%;height:46px;width:46px;margin:0 auto 13px}
+.aff-empty strong{font-size:13px;color:#23405c;display:block}
+.aff-empty p{color:#8495aa;font-size:12px;line-height:1.6;max-width:320px;margin:7px auto}
+.aff-empty a{font-size:12px;color:#225b92;font-weight:700}
+.aff-dashboard-footnote{display:flex;align-items:center;gap:10px 24px;flex-wrap:wrap;font-size:11px;color:#7289a2;padding:0 2px 6px}
+.aff-dashboard-footnote a{margin-left:auto;color:#315b82;font-weight:700}
+.aff-dashboard a:focus-visible,.aff-dashboard button:focus-visible{outline:3px solid #dda833;outline-offset:3px}
+@media(max-width:1150px){.aff-welcome{grid-template-columns:minmax(0,1fr) 180px;gap:22px;padding:32px}.aff-welcome-rate strong{font-size:46px}.aff-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:850px){.aff-welcome{grid-template-columns:1fr}.aff-welcome-rate{display:flex;align-items:center;text-align:left;gap:16px;padding:16px 21px}.aff-welcome-rate strong{font-size:38px;margin:0}.aff-welcome-rate p{max-width:160px}.aff-dashboard-columns{grid-template-columns:1fr}}
+@media(max-width:510px){.aff-dashboard{gap:16px}.aff-welcome{padding:27px 22px;border-radius:14px;gap:18px}.aff-welcome h1{font-size:31px}.aff-welcome-actions{align-items:stretch}.aff-welcome-actions a{flex:1 1 100%}.aff-welcome-rate{gap:12px;flex-wrap:wrap}.aff-welcome-rate strong{font-size:32px}.aff-section-head{align-items:start;flex-direction:column;gap:5px}.aff-period{text-align:left}.aff-metrics{gap:10px}.aff-metric{padding:16px 14px}.aff-metric strong{font-size:23px}.aff-metric-top>span{font-size:11px}.aff-dashboard-panel{padding:20px 18px}.aff-referral-input{flex-wrap:wrap}.aff-referral-input input{flex-basis:100%}.aff-referral-input button{width:100%}.aff-panel-bottom{align-items:start;flex-direction:column}.aff-payout-state{align-items:start;flex-direction:column}}
